@@ -25,7 +25,7 @@ class DriverConfig(dict):
 
         run_atm = True
         med_to_atm = True
-        if (comp_atm == 'satm'):
+        if (comp_atm == None):
             run_atm = False
             med_to_atm = False
         elif (comp_atm == 'datm'):
@@ -55,7 +55,7 @@ class DriverConfig(dict):
 
         run_glc = True
         med_to_glc = True
-        if (comp_glc == 'sglc'):
+        if (comp_glc == None):
             run_glc = False
             med_to_glc = False
         elif (comp_glc == 'cism'):
@@ -92,7 +92,7 @@ class DriverConfig(dict):
 
         run_ice = True
         med_to_ice = True # this is the case for dice
-        if (comp_ice == 'sice'):
+        if (comp_ice == None):
             run_ice = False
             med_to_ice = False
         
@@ -125,7 +125,7 @@ class DriverConfig(dict):
 
         run_ocn = True
         med_to_ocn = True
-        if (comp_ocn == 'socn'):
+        if (comp_ocn == None):
             run_ocn = False
             med_to_ocn = False
         elif (comp_ocn == 'docn'):
@@ -144,7 +144,7 @@ class DriverConfig(dict):
 
         run_rof = True
         med_to_rof = True
-        if (comp_rof == 'srof'):
+        if (comp_rof == None):
             run_rof = False
             med_to_rof = False
         elif (comp_rof == 'drof'):
@@ -171,7 +171,7 @@ class DriverConfig(dict):
 
         run_wav = True
         med_to_wav = True
-        if (comp_wav == 'swav'):
+        if (comp_wav == None):
             run_wav = False
             med_to_wav = False
         elif (comp_wav == 'dwav'):
