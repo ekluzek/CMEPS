@@ -106,7 +106,7 @@ class DriverConfig(dict):
 
         run_lnd = True
         med_to_lnd = True
-        if (comp_lnd == 'slnd'):
+        if (comp_lnd == None):
             run_lnd = False
             med_to_lnd = False
         elif (comp_lnd == 'dlnd'):

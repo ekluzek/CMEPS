@@ -519,7 +519,6 @@ contains
     integer             , intent(out)   :: rc                 ! return code
 
     ! local variables
-    character(len=CL)            :: errstring
     character(len=CL)            :: cvalue
     logical                      :: reprosum_use_ddpdd    ! setup reprosum, use ddpdd
     real(R8)                     :: reprosum_diffmax      ! setup reprosum, set rel_diff_max
