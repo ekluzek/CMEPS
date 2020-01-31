@@ -86,7 +86,7 @@ def _create_drv_namelists(case, infile, confdir, nmlgen, files):
             nmlgen.set_value('brnch_retain_casename' , value='.true.')
 
     # set aquaplanet if appropriate
-    if config['COMP_OCN'] == 'docn' and 'aqua' in case.get_value("DOCN_MODE"):
+    if case.get_value("COMP_OCN") == 'docn' and 'aqua' in case.get_value("DOCN_MODE"):
         nmlgen.set_value('aqua_planet' , value='.true.')
 
     #--------------------------------
@@ -135,6 +135,17 @@ def _create_drv_namelists(case, infile, confdir, nmlgen, files):
         atmdt = int(basedt / case.get_value('ATM_NCPL'))
         expect(atmdt == mindt, 'Active atm should match shortest model timestep atmdt={} mindt={}'
                .format(atmdt, mindt))
+
+    #--------------------------------
+    # Create components_present string
+    #--------------------------------
+    components_present = ''
+    for comp in case.get_values("COMP_CLASSES"):
+        if comp != 'CPL':
+            compname = "COMP_"+comp
+            if case.get_value(compname) is not None:
+                components_present = components_present + ':' + comp.lower()
+    nmlgen.set_value('components_present', value=components_present)
 
     #--------------------------------
     # Overwrite: set start_ymd
@@ -362,6 +373,12 @@ def _create_component_modelio_namelists(confdir, case, files):
 
     nuopc_config_file = os.path.join(confdir, "nuopc.runconfig")
     for model in case.get_values("COMP_CLASSES"):
+        # only do this for components that are active
+        compname = "COMP_"+model
+        if case.get_value(compname) is None:
+            continue
+
+        # create comp_modelio attributes
         model = model.lower()
         with NamelistGenerator(case, definition_file) as nmlgen:
             config = {}

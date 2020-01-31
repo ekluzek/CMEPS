@@ -103,25 +103,24 @@ contains
 
   subroutine SetModelServices(driver, rc)
 
-    use ESMF                  , only : ESMF_GridComp, ESMF_VM, ESMF_Config, ESMF_VMBarrier
-    use ESMF                  , only : ESMF_GridCompGet, ESMF_VMGet, ESMF_ConfigGetAttribute
-    use ESMF                  , only : ESMF_ConfigGetLen, ESMF_RC_NOT_VALID, ESMF_LogFoundAllocError
-    use ESMF                  , only : ESMF_LogSetError, ESMF_LogWrite, ESMF_LOGMSG_INFO
-    use ESMF                  , only : ESMF_GridCompSet, ESMF_SUCCESS, ESMF_METHOD_INITIALIZE
-    use ESMF                  , only : ESMF_VMisCreated, ESMF_GridCompIsPetLocal
-    use ESMF                  , only : ESMF_RC_FILE_OPEN, ESMF_RC_FILE_READ
-    use ESMF                  , only : ESMF_AttributeUpdate, ESMF_VMBroadcast
-    use ESMF                  , only : ESMF_MethodAdd
-    use NUOPC                 , only : NUOPC_CompSetInternalEntryPoint, NUOPC_CompAttributeGet
-    use NUOPC                 , only : NUOPC_CompAttributeAdd, NUOPC_CompAttributeSet
-    use NUOPC_Driver          , only : NUOPC_DriverAddComp, NUOPC_DriverGetComp
-
-    use shr_file_mod          , only : shr_file_setLogunit, shr_file_getunit
-    use pio                   , only : pio_file_is_open, pio_closefile, file_desc_t
-    use perf_mod              , only : t_initf
-    use shr_mem_mod           , only : shr_mem_init
-    use shr_file_mod          , only : shr_file_setLogunit, shr_file_getunit
-    use shr_log_mod           , only : shrlogunit=> shr_log_unit
+    use ESMF         , only : ESMF_GridComp, ESMF_VM, ESMF_Config, ESMF_VMBarrier
+    use ESMF         , only : ESMF_GridCompGet, ESMF_VMGet, ESMF_ConfigGetAttribute
+    use ESMF         , only : ESMF_ConfigGetLen, ESMF_RC_NOT_VALID, ESMF_LogFoundAllocError
+    use ESMF         , only : ESMF_LogSetError, ESMF_LogWrite, ESMF_LOGMSG_INFO
+    use ESMF         , only : ESMF_GridCompSet, ESMF_SUCCESS, ESMF_METHOD_INITIALIZE
+    use ESMF         , only : ESMF_VMisCreated, ESMF_GridCompIsPetLocal
+    use ESMF         , only : ESMF_RC_FILE_OPEN, ESMF_RC_FILE_READ
+    use ESMF         , only : ESMF_AttributeUpdate, ESMF_VMBroadcast
+    use ESMF         , only : ESMF_MethodAdd
+    use NUOPC        , only : NUOPC_CompSetInternalEntryPoint, NUOPC_CompAttributeGet
+    use NUOPC        , only : NUOPC_CompAttributeAdd, NUOPC_CompAttributeSet
+    use NUOPC_Driver , only : NUOPC_DriverAddComp, NUOPC_DriverGetComp
+    use shr_file_mod , only : shr_file_setLogunit, shr_file_getunit
+    use pio          , only : pio_file_is_open, pio_closefile, file_desc_t
+    use perf_mod     , only : t_initf
+    use shr_mem_mod  , only : shr_mem_init
+    use shr_file_mod , only : shr_file_setLogunit, shr_file_getunit
+    use shr_log_mod  , only : shrlogunit=> shr_log_unit
 
     ! input/output variables
     type(ESMF_GridComp)    :: driver
@@ -131,8 +130,6 @@ contains
     type(ESMF_VM)     :: vm
     type(ESMF_Config) :: config
     integer           :: n, i, stat
-    character(len=20) :: model, prefix
-    integer           :: localPet, medpet
     character(len=CL) :: meminitStr
     integer           :: global_comm
     integer           :: maxthreads
@@ -157,7 +154,7 @@ contains
     call ESMF_GridCompGet(driver, vm=vm, config=config, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
-    call ESMF_VMGet(vm, localPet=localPet, mpiCommunicator=global_comm, rc=rc)
+    call ESMF_VMGet(vm, mpiCommunicator=global_comm, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
     !-------------------------------------------
@@ -239,14 +236,14 @@ contains
 
   subroutine SetRunSequence(driver, rc)
 
-    use ESMF                  , only : ESMF_GridComp, ESMF_LogWrite, ESMF_SUCCESS, ESMF_LOGMSG_INFO
-    use ESMF                  , only : ESMF_Config
-    use ESMF                  , only : ESMF_GridCompGet, ESMF_ConfigCreate
-    use ESMF                  , only : ESMF_ConfigLoadFile
-    use NUOPC                 , only : NUOPC_FreeFormat, NUOPC_FreeFormatDestroy
-    use NUOPC                 , only : NUOPC_FreeFormatCreate
-    use NUOPC_Driver          , only : NUOPC_DriverIngestRunSequence, NUOPC_DriverSetRunSequence
-    use NUOPC_Driver          , only : NUOPC_DriverPrint
+    use ESMF         , only : ESMF_GridComp, ESMF_LogWrite, ESMF_SUCCESS, ESMF_LOGMSG_INFO
+    use ESMF         , only : ESMF_Config
+    use ESMF         , only : ESMF_GridCompGet, ESMF_ConfigCreate
+    use ESMF         , only : ESMF_ConfigLoadFile
+    use NUOPC        , only : NUOPC_FreeFormat, NUOPC_FreeFormatDestroy
+    use NUOPC        , only : NUOPC_FreeFormatCreate
+    use NUOPC_Driver , only : NUOPC_DriverIngestRunSequence, NUOPC_DriverSetRunSequence
+    use NUOPC_Driver , only : NUOPC_DriverPrint
 
     ! input/output variables
     type(ESMF_GridComp)  :: driver
@@ -511,14 +508,8 @@ contains
     use ESMF             , only : ESMF_RC_NOT_VALID
     use ESMF             , only : ESMF_GridCompIsPetLocal, ESMF_VMBroadcast
     use NUOPC            , only : NUOPC_CompAttributeGet, NUOPC_CompAttributeSet, NUOPC_CompAttributeAdd
-    use shr_assert_mod   , only : shr_assert_in_domain
-    use shr_const_mod    , only : shr_const_tkfrz, shr_const_tktrip
-    use shr_const_mod    , only : shr_const_mwwv, shr_const_mwdair
     use shr_frz_mod      , only : shr_frz_freezetemp_init
     use shr_reprosum_mod , only : shr_reprosum_setopts
-    use shr_wv_sat_mod   , only : shr_wv_sat_set_default, shr_wv_sat_init
-    use shr_wv_sat_mod   , only : shr_wv_sat_make_tables, ShrWVSatTableSpec
-    use shr_wv_sat_mod   , only : shr_wv_sat_get_scheme_idx, shr_wv_sat_valid_idx
     use glc_elevclass_mod, only : glc_elevclass_init
    !use shr_scam_mod     , only : shr_scam_checkSurface
 
@@ -539,21 +530,7 @@ contains
     logical                      :: single_column         ! scm mode logical
     real(R8)                     :: scmlon                ! single column lon
     real(R8)                     :: scmlat                ! single column lat
-    character(LEN=CS)            :: wv_sat_scheme
-    real(R8)                     :: wv_sat_transition_start
-    logical                      :: wv_sat_use_tables
-    real(R8)                     :: wv_sat_table_spacing
-    type(ShrWVSatTableSpec)      :: liquid_spec
-    type(ShrWVSatTableSpec)      :: ice_spec
-    type(ShrWVSatTableSpec)      :: mixed_spec
-    logical                      :: flag
     integer                      :: i, it, n
-    integer                      :: unitn                 ! Namelist unit number to read
-    integer                      :: localPet, rootpe_med
-    character(len=CL)            :: msgstr
-    integer          , parameter :: ens1=1                ! use first instance of ensemble only
-    integer          , parameter :: fix1=1                ! temporary hard-coding to first ensemble, needs to be fixed
-    real(R8)         , parameter :: epsilo = shr_const_mwwv/shr_const_mwdair
     character(len=*) , parameter :: subname = '(InitAttributes)'
     !----------------------------------------------------------
 
@@ -568,15 +545,12 @@ contains
     call NUOPC_CompAttributeGet(driver, name="reprosum_use_ddpdd", value=cvalue, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
     read(cvalue,*) reprosum_use_ddpdd
-
     call NUOPC_CompAttributeGet(driver, name="reprosum_diffmax", value=cvalue, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
     read(cvalue,*) reprosum_diffmax
-
     call NUOPC_CompAttributeGet(driver, name="reprosum_recompute", value=cvalue, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
     read(cvalue,*) reprosum_recompute
-
     call shr_reprosum_setopts(repro_sum_use_ddpdd_in=reprosum_use_ddpdd, &
          repro_sum_rel_diff_max_in=reprosum_diffmax, repro_sum_recompute_in=reprosum_recompute)
 
@@ -586,86 +560,17 @@ contains
 
     call NUOPC_CompAttributeGet(driver, name="tfreeze_option", value=tfreeze_option, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
-
     call shr_frz_freezetemp_init(tfreeze_option, mastertask)
-
-
-    call NUOPC_CompAttributeGet(driver, name='cpl_rootpe', value=cvalue, rc=rc)
-    read(cvalue, *) rootpe_med
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-    call ESMF_GridCompGet(driver, localPet=localPet, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
 
     !----------------------------------------------------------
     ! Initialize glc_elevclass_mod module variables
     !----------------------------------------------------------
 
     ! This must be called on all processors of the driver
-
     call NUOPC_CompAttributeGet(driver, name='glc_nec', value=cvalue, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
     read(cvalue,*) glc_nec
-
     call glc_elevclass_init(glc_nec, logunit=logunit)
-
-    !----------------------------------------------------------
-    ! Initialize water vapor info
-    !----------------------------------------------------------
-
-    ! TODO: this does not seem to belong here - where should it go?
-
-    call NUOPC_CompAttributeGet(driver, name="wv_sat_scheme", value=wv_sat_scheme, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-
-    if (.not. shr_wv_sat_valid_idx(shr_wv_sat_get_scheme_idx(trim(wv_sat_scheme)))) then
-       call shr_sys_abort(subname//': "'//trim(wv_sat_scheme)//'" is not a recognized saturation vapor pressure scheme name')
-    end if
-    if (.not. shr_wv_sat_set_default(wv_sat_scheme)) then
-       call shr_sys_abort('Invalid wv_sat_scheme.')
-    end if
-
-    call NUOPC_CompAttributeGet(driver, name="wv_sat_transition_start", value=cvalue, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-    read(cvalue,*) wv_sat_transition_start
-
-    call shr_assert_in_domain(wv_sat_transition_start, &
-         ge=0._R8, le=40._R8, &
-         varname="wv_sat_transition_start", msg="Invalid transition temperature range.")
-
-    call NUOPC_CompAttributeGet(driver, name="wv_sat_use_tables", value=cvalue, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-    read(cvalue,*) wv_sat_use_tables
-
-    call NUOPC_CompAttributeGet(driver, name="wv_sat_table_spacing", value=cvalue, rc=rc)
-    if (chkerr(rc,__LINE__,u_FILE_u)) return
-    read(cvalue,*) wv_sat_table_spacing
-
-    ! A transition range averaging method in CAM is only valid for:
-    ! -40 deg C <= T <= 0 deg C
-    ! shr_wv_sat_mod itself checks for values with the wrong sign, but we
-    ! have to check that the range is no more than 40 deg C here. Even
-    ! though this is a CAM-specific restriction, it's not really likely
-    ! that any other parameterization will be dealing with mixed-phase
-    ! water below 40 deg C anyway.
-
-    call shr_wv_sat_init(shr_const_tkfrz, shr_const_tktrip, wv_sat_transition_start, epsilo, errstring)
-    if (errstring /= "") then
-       call shr_sys_abort('shr_wv_sat_init: '//trim(errstring))
-    end if
-
-    ! The below produces internal lookup tables in the range 175-374K for
-    ! liquid water, and 125-274K for ice, with a resolution set by the
-    ! option wv_sat_table_spacing.
-    ! In theory these ranges could be specified in the namelist, but in
-    ! practice users will want to change them *very* rarely if ever, which
-    ! is why only the spacing is in the namelist.
-
-    if (wv_sat_use_tables) then
-       liquid_spec = ShrWVSatTableSpec(ceiling(200._R8/wv_sat_table_spacing), 175._R8, wv_sat_table_spacing)
-       ice_spec    = ShrWVSatTableSpec(ceiling(150._R8/wv_sat_table_spacing), 125._R8, wv_sat_table_spacing)
-       mixed_spec  = ShrWVSatTableSpec(ceiling(250._R8/wv_sat_table_spacing), 125._R8, wv_sat_table_spacing)
-       call shr_wv_sat_make_tables(liquid_spec, ice_spec, mixed_spec)
-    end if
 
     !----------------------------------------------------------
     ! Set single_column flags
@@ -681,17 +586,14 @@ contains
     ! NOTE: cam stand-alone aqua-planet model will no longer be supported here - only the data model aqua-planet
     ! will be supported
     if (single_column) then
-
        call NUOPC_CompAttributeGet(driver, name="scmlon", value=cvalue, rc=rc)
        if (chkerr(rc,__LINE__,u_FILE_u)) return
        read(cvalue,*) scmlon
-
        call NUOPC_CompAttributeGet(driver, name="scmlat", value=cvalue, rc=rc)
        if (chkerr(rc,__LINE__,u_FILE_u)) return
        read(cvalue,*) scmlat
 
        ! TODO(mvertens, 2019-01-30): need to add single column functionality
-
     endif
 
   end subroutine InitAttributes
@@ -700,17 +602,17 @@ contains
 
   subroutine CheckAttributes( driver, rc )
 
-    ! !DESCRIPTION: Check that input driver config values have reasonable values
+    ! Check that input driver config values have reasonable values
 
     use shr_sys_mod , only : shr_sys_abort
     use ESMF        , only : ESMF_GridComp, ESMF_SUCCESS, ESMF_LogWrite, ESMF_LOGMSG_INFO
     use NUOPC       , only : NUOPC_CompAttributeGet
 
-    ! !INPUT/OUTPUT PARAMETERS:
+    ! input/output variables
     type(ESMF_GridComp) , intent(inout) :: driver
     integer             , intent(out)   :: rc
 
-    !----- local -----
+    ! local variables
     character(len=CL) :: cvalue         ! temporary
     character(len=CL) :: start_type     ! Type of startup
     character(len=CL) :: rest_case_name ! Short case identification
@@ -779,21 +681,17 @@ contains
     integer             , intent(inout) :: rc
 
     ! local variables
-    integer                        :: n
-    integer                        :: stat
     integer                        :: inst_index
     character(len=CL)              :: cvalue
-    character(len=32), allocatable :: attrList(:)
-    integer                        :: componentCount
-    character(len=*), parameter    :: subname = "(esm.F90:AddAttributes)"
     logical                        :: lvalue = .false.
+    character(len=*), parameter    :: subname = "(esm.F90:AddAttributes)"
     !-------------------------------------------
 
     rc = ESMF_Success
     call ESMF_LogWrite(trim(subname)//": called", ESMF_LOGMSG_INFO)
 
     !------
-    ! Add compid to gcomp attributes
+    ! Add compid attribute to gcomp
     !------
     write(cvalue,*) compid
     call NUOPC_CompAttributeAdd(gcomp, attrList=(/'MCTID'/), rc=rc)
@@ -802,35 +700,22 @@ contains
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
     !------
-    ! Add all the other attributes in AttrList (which have already been added to driver attributes)
+    ! Add read_restart attribute to gcomp
     !------
-    allocate(attrList(1))
-    attrList =  (/"read_restart"/)
-
-    call NUOPC_CompAttributeAdd(gcomp, attrList=attrList, rc=rc)
+    call NUOPC_CompAttributeAdd(gcomp, attrList=(/'read_restart'/), rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
-    do n = 1,size(attrList)
-       if (trim(attrList(n)) == "read_restart") then
-          call NUOPC_CompAttributeGet(driver, name="mediator_read_restart", value=cvalue, rc=rc)
-          if (chkerr(rc,__LINE__,u_FILE_u)) return
-          read(cvalue,*) lvalue
-          if (.not. lvalue) then         
-            call NUOPC_CompAttributeGet(driver, name=trim(attrList(n)), value=cvalue, rc=rc)
-            if (chkerr(rc,__LINE__,u_FILE_u)) return
-          end if
-          call NUOPC_CompAttributeSet(gcomp, name=trim(attrList(n)), value=trim(cvalue), rc=rc)
-          if (chkerr(rc,__LINE__,u_FILE_u)) return
-       else 
-          call NUOPC_CompAttributeGet(driver, name=trim(attrList(n)), value=cvalue, rc=rc)
-          if (chkerr(rc,__LINE__,u_FILE_u)) return
-          call NUOPC_CompAttributeSet(gcomp, name=trim(attrList(n)), value=trim(cvalue), rc=rc)
-          if (chkerr(rc,__LINE__,u_FILE_u)) return
-       end if
-    enddo
-    deallocate(attrList)
+    call NUOPC_CompAttributeGet(driver, name="mediator_read_restart", value=cvalue, rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
+    read(cvalue,*) lvalue
+    if (.not. lvalue) then
+       call NUOPC_CompAttributeGet(driver, name='read_restart', value=cvalue, rc=rc)
+       if (chkerr(rc,__LINE__,u_FILE_u)) return
+    end if
+    call NUOPC_CompAttributeSet(gcomp, name='read_restart', value=trim(cvalue), rc=rc)
+    if (chkerr(rc,__LINE__,u_FILE_u)) return
 
     !------
-    ! Add component specific attributes
+    ! Add component specific attributes to gcomp
     !------
     call ReadAttributes(gcomp, config, trim(compname)//"_attributes::", rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
@@ -845,7 +730,7 @@ contains
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
     !------
-    ! Add mediator specific attributes
+    ! Add mediator specific attributes if gcomp is mediator
     !------
     if (compname == 'MED') then
        call ReadAttributes(gcomp, config, "MED_history_attributes::", rc=rc)
@@ -856,7 +741,7 @@ contains
     endif
 
     !------
-    ! Add multi-instance specific attributes
+    ! Add multi-instance specific attributes to comp
     !------
     call NUOPC_CompAttributeAdd(gcomp, attrList=(/'inst_index'/), rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
@@ -912,10 +797,10 @@ contains
     call NUOPC_CompAttributeIngest(gcomp, attrFF, addFlag=.true., rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return
 
-    !    if (present (formatprint)) then
-    !       call pretty_print_nuopc_freeformat(attrFF, trim(label)//' attributes', rc=rc)
-    !       if (chkerr(rc,__LINE__,u_FILE_u)) return
-    !    end if
+    ! if (present (formatprint)) then
+    !    call pretty_print_nuopc_freeformat(attrFF, trim(label)//' attributes', rc=rc)
+    !    if (chkerr(rc,__LINE__,u_FILE_u)) return
+    ! end if
 
     call NUOPC_FreeFormatDestroy(attrFF, rc=rc)
     if (chkerr(rc,__LINE__,u_FILE_u)) return

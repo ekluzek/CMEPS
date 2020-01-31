@@ -450,11 +450,7 @@ contains
     character(len=CS)   :: cvalue
     type(InternalState) :: is_local
     integer             :: stat
-    character(len=8)    :: atm_present, lnd_present
-    character(len=8)    :: ice_present, rof_present
-    character(len=8)    :: glc_present, med_present
-    character(len=8)    :: ocn_present, wav_present
-    character(len=32)   :: attrList(8)
+    character(len=CX)   :: msgString
     character(len=*),parameter :: subname='(module_MED:InitializeIPDv03p1)'
     !-----------------------------------------------------------
 
@@ -519,74 +515,32 @@ contains
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
     !------------------
-    ! Determine component present indices
+    ! Determine component present status
     !------------------
 
-    call NUOPC_CompAttributeAdd(gcomp, &
-         attrList=(/'atm_present','lnd_present','ocn_present','ice_present',&
-                    'rof_present','wav_present','glc_present','med_present'/), rc=rc)
+    call NUOPC_CompAttributeGet(gcomp, name='components_present', value=cvalue, rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    is_local%wrap%comp_present(:) = .false.
+    is_local%wrap%comp_present(compmed) = .true.
+    if (index(cvalue, ":atm") /= 0) is_local%wrap%comp_present(compatm) = .true.
+    if (index(cvalue, ":glc") /= 0) is_local%wrap%comp_present(compglc) = .true.
+    if (index(cvalue, ":ice") /= 0) is_local%wrap%comp_present(compice) = .true.
+    if (index(cvalue, ":lnd") /= 0) is_local%wrap%comp_present(complnd) = .true.
+    if (index(cvalue, ":ocn") /= 0) is_local%wrap%comp_present(compocn) = .true.
+    if (index(cvalue, ":rof") /= 0) is_local%wrap%comp_present(comprof) = .true.
+    if (index(cvalue, ":wav") /= 0) is_local%wrap%comp_present(compwav) = .true.
+    if (mastertask) write(logunit,*)
+    do n1 = 1,ncomps
+       write(msgString,'(A,L4)') trim(subname)//' comp_present(comp'//trim(compname(n1))//') = ',&
+            is_local%wrap%comp_present(n1)
+       if (mastertask) write(logunit,*) ' comp_present(comp'//trim(compname(n1))//') = ',is_local%wrap%comp_present(n1)
+       call ESMF_LogWrite(trim(msgString), ESMF_LOGMSG_INFO)
+    end do
+    if (mastertask) write(logunit,*)
 
-    med_present = "true"
-    atm_present = "true"
-    lnd_present = "true"
-    ocn_present = "true"
-    ice_present = "true"
-    rof_present = "true"
-    wav_present = "true"
-    glc_present = "true"
-
-    call NUOPC_CompAttributeGet(gcomp, name='ATM_model', value=cvalue, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    if (trim(cvalue) == 'satm') atm_present = "false"
-    call NUOPC_CompAttributeGet(gcomp, name='LND_model', value=cvalue, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    if (trim(cvalue) == 'slnd') lnd_present = "false"
-    call NUOPC_CompAttributeGet(gcomp, name='OCN_model', value=cvalue, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    if (trim(cvalue) == 'socn') ocn_present = "false"
-    call NUOPC_CompAttributeGet(gcomp, name='ICE_model', value=cvalue, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    if (trim(cvalue) == 'sice') ice_present = "false"
-    call NUOPC_CompAttributeGet(gcomp, name='ROF_model', value=cvalue, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    if (trim(cvalue) == 'srof') rof_present = "false"
-    call NUOPC_CompAttributeGet(gcomp, name='WAV_model', value=cvalue, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    if (trim(cvalue) == 'swav') wav_present = "false"
-    call NUOPC_CompAttributeGet(gcomp, name='GLC_model', value=cvalue, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    if (trim(cvalue) == 'sglc') glc_present = "false"
-
-    call NUOPC_CompAttributeSet(gcomp, name="atm_present", value=atm_present, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    call NUOPC_CompAttributeSet(gcomp, name="lnd_present", value=lnd_present, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    call NUOPC_CompAttributeSet(gcomp, name="ocn_present", value=ocn_present, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    call NUOPC_CompAttributeSet(gcomp, name="ice_present", value=ice_present, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    call NUOPC_CompAttributeSet(gcomp, name="rof_present", value=rof_present, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    call NUOPC_CompAttributeSet(gcomp, name="wav_present", value=wav_present, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    call NUOPC_CompAttributeSet(gcomp, name="glc_present", value=glc_present, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    call NUOPC_CompAttributeSet(gcomp, name="med_present", value=med_present, rc=rc)
-    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-
-    if (mastertask) then
-       write(logunit,*)
-       write(logunit,*) "atm_present="//trim(atm_present)
-       write(logunit,*) "lnd_present="//trim(lnd_present)
-       write(logunit,*) "ocn_present="//trim(ocn_present)
-       write(logunit,*) "ice_present="//trim(ice_present)
-       write(logunit,*) "rof_present="//trim(rof_present)
-       write(logunit,*) "wav_present="//trim(wav_present)
-       write(logunit,*) "glc_present="//trim(glc_present)
-       write(logunit,*) "med_present="//trim(med_present)
-       write(logunit,*)
-    end if
+    !------------------
+    ! Determine scalar field indices
+    !------------------
 
     call NUOPC_CompAttributeGet(gcomp, name="ScalarFieldName", value=cvalue, rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
@@ -1459,21 +1413,6 @@ contains
        call ESMF_LogFlush()
 
       !----------------------------------------------------------
-      !--- Check present flags
-      !----------------------------------------------------------
-
-      do n1 = 1,ncomps
-        call ESMF_AttributeGet(gcomp, name=trim(compname(n1))//"_present", value=value, defaultValue="false", &
-             convention="NUOPC", purpose="Instance", rc=rc)
-        if (ChkErr(rc,__LINE__,u_FILE_u)) return
-
-        is_local%wrap%comp_present(n1) = (value == "true")
-        write(msgString,'(A,L4)') trim(subname)//' comp_present(comp'//trim(compname(n1))//') = ',&
-             is_local%wrap%comp_present(n1)
-        call ESMF_LogWrite(trim(msgString), ESMF_LOGMSG_INFO)
-      enddo
-
-      !----------------------------------------------------------
       !--- Check for active coupling interactions
       !    must be allowed, bundles created, and both sides have some fields
       !----------------------------------------------------------
@@ -1496,6 +1435,7 @@ contains
                    if (ChkErr(rc,__LINE__,u_FILE_u)) return
                    if (cntn2 > 0) then
                       is_local%wrap%med_coupling_active(n1,n2) = .true.
+
                    endif
                 endif
              enddo
@@ -1960,6 +1900,7 @@ contains
     integer, intent(out) :: rc
 
     ! local variables
+    type(InternalState)     :: is_local
     type(ESMF_Clock)        :: mediatorClock, driverClock
     type(ESMF_Time)         :: currTime
     type(ESMF_TimeInterval) :: timeStep
@@ -1970,7 +1911,6 @@ contains
     type(ESMF_ALARM)        :: restart_alarm
     type(ESMF_ALARM)        :: med_profile_alarm
     type(ESMF_ALARM)        :: glc_avg_alarm
-    logical                 :: glc_present
     character(len=16)       :: glc_avg_period
     character(len=256)      :: stop_option    ! Stop option units
     integer                 :: stop_n         ! Number until stop interval
@@ -1989,6 +1929,11 @@ contains
     if (dbug_flag > 5) then
       call ESMF_LogWrite(trim(subname)//": called", ESMF_LOGMSG_INFO)
     endif
+
+    ! get internal state
+    nullify(is_local%wrap)
+    call ESMF_GridCompGetInternalState(gcomp, is_local, rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
     ! query the Mediator for clocks
     call NUOPC_MediatorGet(gcomp, mediatorClock=mediatorClock, driverClock=driverClock, rc=rc)
@@ -2046,10 +1991,7 @@ contains
 
        ! Set glc averaging alarm if appropriate
 
-       call NUOPC_CompAttributeGet(gcomp, name="glc_present", value=cvalue, rc=rc)
-       if (ChkErr(rc,__LINE__,u_FILE_u)) return
-       glc_present = (cvalue == "true")
-       if (glc_present) then
+       if (is_local%wrap%comp_present(compglc)) then
           call NUOPC_CompAttributeGet(gcomp, name="glc_avg_period", value=glc_avg_period, rc=rc)
           if (ChkErr(rc,__LINE__,u_FILE_u)) return
           if (trim(glc_avg_period) == 'hour') then

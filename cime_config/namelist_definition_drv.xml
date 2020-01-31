@@ -4,6 +4,18 @@
 
 <entry_id version="2.0">
 
+  <entry id="component_list">
+    <type>char</type>
+    <category>nuopc</category>
+    <group>nuopc_var</group>
+    <desc>
+      Model components that are active
+    </desc>
+    <values>
+      <value>ATM OCN ICE LND ROF GLC WAV MED</value>
+    </values>
+  </entry>
+
   <!-- ======================================== -->
   <!--  DRIVER attributes                       -->
   <!-- ======================================== -->
@@ -291,84 +303,6 @@
     </values>
   </entry>
 
-  <entry id="component_list">
-    <type>char</type>
-    <category>nuopc</category>
-    <group>nuopc_var</group>
-    <desc>
-      Model components that are active
-    </desc>
-    <values>
-      <value>ATM OCN ICE LND ROF GLC WAV MED</value>
-    </values>
-  </entry>
-
-  <!-- =========================================== -->
-  <!-- DRIVER saturation vapor attributes          -->
-  <!-- =========================================== -->
-
-  <entry id="wv_sat_scheme">
-    <type>char</type>
-    <category>wv_sat</category>
-    <group>DRIVER_attributes</group>
-    <valid_values>GoffGratch,MurphyKoop,Bolton,Flatau</valid_values>
-    <desc>
-      Type of water vapor saturation vapor pressure scheme employed. 'GoffGratch' for
-      Goff and Gratch (1946); 'MurphyKoop' for Murphy and Koop (2005); 'Bolton' for
-      Bolton (1980); 'Flatau' for Flatau, Walko, and Cotton (1992).
-      Default: GoffGratch
-    </desc>
-    <values>
-      <value>GoffGratch</value>
-    </values>
-  </entry>
-
-  <entry id="wv_sat_transition_start">
-    <type>real</type>
-    <category>wv_sat</category>
-    <group>DRIVER_attributes</group>
-    <desc>
-      Width of the liquid-ice transition range in mixed-phase water saturation vapor
-      pressure calculations. The range always ends at 0 degrees Celsius, so this
-      variable only affects the start of the transition.
-      Default: 20K
-      WARNING: CAM is tuned to the default value of this variable. Because it affects
-      so many different parameterizations, changes to this variable may require a
-      significant retuning of CAM's cloud physics to give reasonable results.
-    </desc>
-    <values>
-      <value>20.0D0</value>
-    </values>
-  </entry>
-
-  <entry id="wv_sat_use_tables">
-    <type>logical</type>
-    <category>wv_sat</category>
-    <group>DRIVER_attributes</group>
-    <desc>
-      Whether or not to produce lookup tables at init time to use as a cache for
-      saturation vapor pressure.
-      Default: .false.
-    </desc>
-    <values>
-      <value>.false.</value>
-    </values>
-  </entry>
-
-  <entry id="wv_sat_table_spacing">
-    <type>real</type>
-    <category>wv_sat</category>
-    <group>DRIVER_attributes</group>
-    <desc>
-      Temperature resolution of saturation vapor pressure lookup tables in Kelvin.
-      (This is only used if wv_sat_use_tables is .true.)
-      Default: 1.0
-    </desc>
-    <values>
-      <value>1.0D0</value>
-    </values>
-  </entry>
-
   <!-- =========================================== -->
   <!-- All components orbital attributes           -->
   <!-- =========================================== -->
@@ -468,72 +402,6 @@
   <!-- =========================================== -->
   <!-- All component general attributes            -->
   <!-- =========================================== -->
-
-  <entry id="MED_model">
-    <type>char</type>
-    <category>nuopc</category>
-    <group>ALLCOMP_attributes</group>
-    <values>
-      <value cime_model="cesm">cesm</value>
-    </values>
-  </entry>
-  <entry id="ATM_model" modify_via_xml="COMP_ATM">
-    <type>char</type>
-    <category>nuopc</category>
-    <group>ALLCOMP_attributes</group>
-    <values>
-      <value>$COMP_ATM</value>
-    </values>
-  </entry>
-  <entry id="OCN_model" modify_via_xml="COMP_OCN">
-    <type>char</type>
-    <category>nuopc</category>
-    <group>ALLCOMP_attributes</group>
-    <values>
-      <value>$COMP_OCN</value>
-    </values>
-  </entry>
-  <entry id="ICE_model" modify_via_xml="COMP_ICE">
-    <type>char</type>
-    <category>nuopc</category>
-    <group>ALLCOMP_attributes</group>
-    <values>
-      <value>$COMP_ICE</value>
-    </values>
-  </entry>
-  <entry id="ROF_model" modify_via_xml="COMP_ROF">
-    <type>char</type>
-    <category>nuopc</category>
-    <group>ALLCOMP_attributes</group>
-    <values>
-      <value>$COMP_ROF</value>
-      <value ROF_MODE='null'>srof</value>
-    </values>
-  </entry>
-  <entry id="LND_model" modify_via_xml="COMP_LND">
-    <type>char</type>
-    <category>nuopc</category>
-    <group>ALLCOMP_attributes</group>
-    <values>
-      <value>$COMP_LND</value>
-    </values>
-  </entry>
-  <entry id="GLC_model" modify_via_xml="COMP_GLC">
-    <type>char</type>
-    <category>nuopc</category>
-    <group>ALLCOMP_attributes</group>
-    <values>
-      <value>$COMP_GLC</value>
-    </values>
-  </entry>
-  <entry id="WAV_model" modify_via_xml="COMP_WAV">
-    <type>char</type>
-    <category>nuopc</category>
-    <group>ALLCOMP_attributes</group>
-    <values>
-      <value>$COMP_WAV</value>
-    </values>
-  </entry>
 
   <entry id="model_version">
     <type>char</type>
@@ -795,6 +663,19 @@
   <!-- =========================================== -->
   <!-- MED general attributes                      -->
   <!-- =========================================== -->
+
+  <entry id="components_present">
+    <type>char</type>
+    <category>control</category>
+    <group>MED_attributes</group>
+    <desc>
+      Model components that are present in a colon delimited string.
+      This is used by the mediator to create the present flags for the mediator components.
+    </desc>
+    <values>
+      <value>unset</value>
+    </values>
+  </entry>
 
   <entry id="glc_renormalize_smb">
     <type>char</type>
@@ -3824,5 +3705,72 @@
       <value>$DATA_ASSIMILATION_LND</value>
     </values>
   </entry>
+
+  <!-- =========================================== -->
+  <!-- Atmosphere saturation vapor attributes          -->
+  <!-- =========================================== -->
+
+  <entry id="wv_sat_scheme">
+    <type>char</type>
+    <category>wv_sat</category>
+    <group>ATM_attributes</group>
+    <valid_values>GoffGratch,MurphyKoop,Bolton,Flatau</valid_values>
+    <desc>
+      Type of water vapor saturation vapor pressure scheme employed. 'GoffGratch' for
+      Goff and Gratch (1946); 'MurphyKoop' for Murphy and Koop (2005); 'Bolton' for
+      Bolton (1980); 'Flatau' for Flatau, Walko, and Cotton (1992).
+      Default: GoffGratch
+    </desc>
+    <values>
+      <value>GoffGratch</value>
+    </values>
+  </entry>
+
+  <entry id="wv_sat_transition_start">
+    <type>real</type>
+    <category>wv_sat</category>
+    <group>ATM_attributes</group>
+    <desc>
+      Width of the liquid-ice transition range in mixed-phase water saturation vapor
+      pressure calculations. The range always ends at 0 degrees Celsius, so this
+      variable only affects the start of the transition.
+      Default: 20K
+      WARNING: CAM is tuned to the default value of this variable. Because it affects
+      so many different parameterizations, changes to this variable may require a
+      significant retuning of CAM's cloud physics to give reasonable results.
+    </desc>
+    <values>
+      <value>20.0D0</value>
+    </values>
+  </entry>
+
+  <entry id="wv_sat_use_tables">
+    <type>logical</type>
+    <category>wv_sat</category>
+    <group>ATM_attributes</group>
+    <desc>
+      Whether or not to produce lookup tables at init time to use as a cache for
+      saturation vapor pressure.
+      Default: .false.
+    </desc>
+    <values>
+      <value>.false.</value>
+    </values>
+  </entry>
+
+  <entry id="wv_sat_table_spacing">
+    <type>real</type>
+    <category>wv_sat</category>
+    <group>ATM_attributes</group>
+    <desc>
+      Temperature resolution of saturation vapor pressure lookup tables in Kelvin.
+      (This is only used if wv_sat_use_tables is .true.)
+      Default: 1.0
+    </desc>
+    <values>
+      <value>1.0D0</value>
+    </values>
+  </entry>
+
 
 </entry_id>
