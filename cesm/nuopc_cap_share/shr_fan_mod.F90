@@ -64,7 +64,6 @@ contains
           if (iostat /= 0) then
              write(logunit, *) subname, 'FAN/CAM coupling not specified'
              fan_nh3_to_atm = .false.
-             !call shr_sys_abort(subName//'Error reading namelist')
           else          
              read(fileunit, fan_inparm, iostat=iostat)
              if (iostat /= 0) then
@@ -72,6 +71,8 @@ contains
              end if
           end if
           close(fileunit)
+       else
+          call shr_sys_abort(subName//'no file:'//trim(NLFilename)//' found')
        end if
     
     end if ! root
