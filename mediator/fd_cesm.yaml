@@ -98,6 +98,10 @@
        canonical_units: molecules/m2/sec
        description: land export - MEGAN voc emission fluxes from land (1->20)
      #
+     - standard_name: Fall_FAN_nh3
+       canonical_units: molecules/m2/sec
+       description: land export - FAN NH3 emission fluxes from land
+     #
      - standard_name: Sl_anidf
        canonical_units: 1
        description: land export

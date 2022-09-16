@@ -79,7 +79,7 @@ contains
     call shr_mpi_bcast(fan_nh3_to_atm, mpicomm)
     have_fields = fan_nh3_to_atm
     if (fan_nh3_to_atm) then
-       fan_fields = 'Fall_FANNH3'
+       fan_fields = 'Fall_FAN_nh3'
     else
        fan_fields = ''
     end if
