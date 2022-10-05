@@ -157,4 +157,22 @@
     </desc>
   </entry>
 
+  <!-- ========================================================================================  -->
+  <!-- Lake surface water balance                                                                 -->
+  <!-- ========================================================================================  -->
+
+  <entry id="flds_lake_surface_water_balance_fields" modify_via_xml="FLDS_LAKE_SURF_H2O_BAL">
+    <type>logical</type>
+    <category>flds</category>
+    <group>fire_emis_nl</group>
+    <desc>
+      If true pass lake surface water balance fields (P and ET) from LAND to RIVER component.
+    </desc>
+    <values>
+      <value>$FLDS_LAKE_SURF_H2O_BAL</value>
+    </values>
+  </entry>
+
+
+
 </entry_id>

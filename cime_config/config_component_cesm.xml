@@ -404,7 +404,6 @@
       Default is off
     </desc>
   </entry>
-
   <entry id="CPL_SEQ_OPTION">
     <type>char</type>
     <valid_values>TIGHT,OPTION1,OPTION2</valid_values>
@@ -542,6 +541,20 @@
     <group>run_flags</group>
     <file>env_run.xml</file>
     <desc>Turn on the passing of water isotope fields through the coupler</desc>
+  </entry>
+
+  <entry id="FLDS_LAKE_SURF_H2O_BAL">
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_component_cpl</group>
+    <file>env_run.xml</file>
+    <desc>
+      Turn on the passing of surface water balance fields (precipition an evapotranspiration [i.e. P and ET]) 
+      over lakes through the coupler from the land component to the river component. Can only be active for 
+      compsets with CTSM as the land model and mizuRoute as the river model.
+      Default is FALSE
+    </desc>
   </entry>
 
   <entry id="GLC_NEC">
