@@ -264,7 +264,7 @@ contains
 
     use NUOPC             , only : NUOPC_IsConnected
     use ESMF              , only : ESMF_GridComp, ESMF_GridCompGet
-    use ESMF              , only : ESMF_FieldBundleGet, ESMF_FieldGet
+    use ESMF              , only : ESMF_FieldBundleGet, ESMF_FieldGet, ESMF_FieldWriteVTK
     use ESMF              , only : ESMF_LogWrite, ESMF_LOGMSG_INFO, ESMF_SUCCESS
     use esmFlds           , only : med_fldList_GetfldListTo, med_fldList_type
     use med_map_mod       , only : med_map_field_packed
