@@ -349,7 +349,7 @@ contains
 
     call ESMF_FieldBundleGet(FBlndAccum2rof_l, "Flrl_rofsur", field=lfield, rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    call ESMF_FieldWriteVTK(lfield, fileName=“srcField”) 
+    call ESMF_FieldWriteVTK(lfield, fileName="srcField") 
     call med_map_field_packed( FBSrc=FBlndAccum2rof_l, FBDst=FBlndAccum2rof_r, &
          FBFracSrc=is_local%wrap%FBFrac(complnd), &
          field_normOne=is_local%wrap%field_normOne(complnd,comprof,:), &
@@ -358,7 +358,7 @@ contains
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
     call ESMF_FieldBundleGet(FBlndAccum2rof_r, "Flrl_rofsur", field=lfield, rc=rc)
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
-    call ESMF_FieldWriteVTK(lfield, fileName=“dstField”) 
+    call ESMF_FieldWriteVTK(lfield, fileName="dstField") 
 
     if (dbug_flag > 1) then
        call fldbun_diagnose(FBlndAccum2rof_r, string=trim(subname)//' FBlndAccum2rof_r after map ', rc=rc)
