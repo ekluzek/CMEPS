@@ -5,7 +5,7 @@ module med_internalstate_mod
   !-----------------------------------------------------------------------------
 
   use ESMF         , only : ESMF_RouteHandle, ESMF_FieldBundle, ESMF_State, ESMF_Field, ESMF_VM
-  use ESMF         , only : ESMF_GridComp, ESMF_MAXSTR, ESMF_LOGMSG_INFO, ESMF_LOGWRITE
+  use ESMF         , only : ESMF_GridComp, ESMF_Mesh, ESMF_MAXSTR, ESMF_LOGMSG_INFO, ESMF_LOGWRITE
   use med_kind_mod , only : CX=>SHR_KIND_CX, CS=>SHR_KIND_CS, CL=>SHR_KIND_CL, R8=>SHR_KIND_R8
   use med_utils_mod, only : chkerr => med_utils_ChkErr
 
@@ -18,8 +18,8 @@ module med_internalstate_mod
   public :: med_internalstate_defaultmasks
 
   integer, public :: logunit            ! logunit for mediator log output
-  integer, public :: diagunit           ! diagunit for budget output (med master only)
-  logical, public :: mastertask=.false. ! is this the mastertask
+  integer, public :: diagunit           ! diagunit for budget output (med main only)
+  logical, public :: maintask=.false. ! is this the maintask
   integer, public :: med_id             ! needed currently in med_io_mod and set in esm.F90
 
   ! Components
@@ -47,7 +47,13 @@ module med_internalstate_mod
   character(len=CS), public :: glc_name = ''
 
   ! Coupling mode
-  character(len=CS), public :: coupling_mode ! valid values are [cesm,nems_orig,nems_frac,nems_orig_data,hafs]
+  character(len=CS), public :: coupling_mode ! valid values are [cesm,nems_orig,nems_frac,nems_orig_data,hafs,nems_frac_aoflux,nems_frac_aoflux_sbs]
+
+  ! Atmosphere-ocean flux algorithm
+  character(len=CS), public :: aoflux_code   ! valid values are [cesm,ccpp]
+
+  ! Atmosphere-ocean CCPP suite name
+  character(len=CL), public :: aoflux_ccpp_suite
 
   ! Default src and destination masks for mapping
   integer, public, allocatable :: defaultMasks(:,:)
@@ -153,6 +159,7 @@ module med_internalstate_mod
 
     ! Mediator field bundles and other info for atm/ocn flux computation
     character(len=CS)      :: aoflux_grid                        ! 'ogrid', 'agrid' or 'xgrid'
+    type(ESMF_Mesh)        :: aoflux_mesh                        ! Mesh used for atm/ocn flux computation
     type(ESMF_FieldBundle) :: FBMed_aoflux_a                     ! Ocn/Atm flux output fields on atm grid
     type(ESMF_FieldBundle) :: FBMed_aoflux_o                     ! Ocn/Atm flux output fields on ocn grid
     type(packed_data_type), pointer :: packed_data_aoflux_o2a(:) ! packed data for mapping ocn->atm
@@ -201,12 +208,9 @@ contains
     ! local variables
     type(InternalState)        :: is_local
     logical                    :: ispresent, isset
-    integer                    :: n, ns, n1, n2
-    integer                    :: stat
-    logical                    :: glc_present
+    integer                    :: n, ns, n1
     character(len=8)           :: cnum
     character(len=CS)          :: cvalue
-    character(len=CL)          :: cname
     character(len=ESMF_MAXSTR) :: mesh_glc
     character(len=CX)          :: msgString
     character(len=3)           :: name
@@ -235,7 +239,7 @@ contains
                 end do
                 num_icesheets = num_icesheets + 1
              endif
-             if (mastertask) then
+             if (maintask) then
                 write(logunit,'(a,i8)') trim(subname)//' number of ice sheets is ',num_icesheets
              end if
           end if
@@ -329,7 +333,7 @@ contains
        compname(compglc(ns)) = 'glc' // trim(cnum)
     end do
 
-    if (mastertask) then
+    if (maintask) then
        ! Write out present flags
        write(logunit,*)
        do n1 = 1,ncomps
@@ -400,7 +404,7 @@ contains
     ! starts, but any coupling set to false will never be allowed.
     ! are allowed, just update the table below.
 
-    if (mastertask) then
+    if (maintask) then
        write(logunit,'(a)') trim(subname) // "Initializing active coupling flags"
     end if
 
@@ -487,7 +491,7 @@ contains
     ! - the columns are the source of coupling
     ! - So, the second column indicates which models the atm is coupled to.
     ! - And the second row indicates which models are coupled to the atm.
-    if (mastertask) then
+    if (maintask) then
        write(logunit,*) ' '
        write(logunit,'(A)') trim(subname)//' Allowed coupling flags'
        write(logunit,'(2x,A10,20(A5))') '|from to -> ',(compname(n2),n2=1,ncomps)
