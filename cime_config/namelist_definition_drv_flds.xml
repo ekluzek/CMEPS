@@ -133,6 +133,39 @@
   </entry>
 
   <!-- ========================================================================================  -->
+  <!-- Dust emissions fluxes                                                                     -->
+  <!-- ========================================================================================  -->
+
+  <entry id="dust_emis_method">
+    <type>char</type>
+    <category>Dust_emissions</category>
+    <group>dust_emis_nl</group>
+    <valid_values>Zender_2003,Leung_2023</valid_values>
+    <desc>
+      The scheme used for dust emissions:
+      The available methods are:
+         Zender_2003: C.S. Zender et. al. 2003 : Mineral Dust Entrainment and Deposition (DEAD) model:
+                      Description and 1990s dust climatology, Journal of Geophysical Research: Atmospheres
+         Leung_2023: D.M. Leung et. al. 2023, A new process - based and scale - aware desert dust emission scheme for global climate models – 
+                     Part II : evaluation in the Community Earth System Model (CESM2)
+    </desc>
+  </entry>
+
+  <entry id="zender_soil_erod_source">
+    <type>char</type>
+    <category>Dust_emissions</category>
+    <group>dust_emis_nl</group>
+    <valid_values>lnd,atm,none</valid_values>
+    <desc>
+      The available methods are:
+      'lnd' - handled in CLM
+      'atm' - handled in CAM
+      'none' - Not used
+    </desc>
+  </entry>
+
+
+  <!-- ========================================================================================  -->
   <!-- CARMA fields                                                                              -->
   <!-- ========================================================================================  -->
 
