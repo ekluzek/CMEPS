@@ -151,11 +151,13 @@ contains
     use med_internalstate_mod , only : coupling_mode
     use med_internalstate_mod , only : compatm, compocn, compice, complnd
     use med_internalstate_mod , only : comprof, compglc, compwav, compname
-    use med_internalstate_mod , only : mapfcopy, mapconsd, mapnstod_consd
+    use med_internalstate_mod , only : mapfcopy, mapconsd, mapconsf, mapnstod_consd
     use med_internalstate_mod , only : InternalState, logunit, mastertask
     use med_map_mod           , only : med_map_routehandles_init, med_map_rh_is_created
     use med_methods_mod       , only : State_getNumFields => med_methods_State_getNumFields
+    use med_methods_mod       , only : field_getdata1d  => med_methods_Field_getdata1d
     use perf_mod              , only : t_startf, t_stopf
+    use shr_sys_mod           , only : shr_sys_abort
 
     ! input/output variables
     type(ESMF_GridComp)  :: gcomp
@@ -508,7 +510,7 @@ contains
 
        ! Set 'lfrac' in FBFrac(comprof)
        if (is_local%wrap%comp_present(complnd)) then
-          maptype = mapconsd
+          maptype = mapconsf
           if (.not. med_map_RH_is_created(is_local%wrap%RH(complnd,comprof,:),maptype, rc=rc)) then
              call med_map_routehandles_init( complnd, comprof, &
                   FBSrc=is_local%wrap%FBImp(complnd,complnd), &
@@ -518,10 +520,21 @@ contains
           end if
           call ESMF_FieldBundleGet(is_local%wrap%FBfrac(complnd), 'lfrac', field=field_src, rc=rc)
           if (ChkErr(rc,__LINE__,u_FILE_u)) return
+          !call field_getdata1d(field_src, lfrac, rc)
+          !if (ChkErr(rc,__LINE__,u_FILE_u)) return
+          !if ( (minval(lfrac) < -eps_fraclim) .or. (maxval(lfrac) > 1._r8+eps_fraclim) )then
+          !    call shr_sys_abort( "lfrac on the LND grid is out of bounds" )
+          !end if
           call ESMF_FieldBundleGet(is_local%wrap%FBfrac(comprof), 'lfrac', field=field_dst, rc=rc)
           if (ChkErr(rc,__LINE__,u_FILE_u)) return
           call med_map_field(field_src, field_dst, is_local%wrap%RH(complnd,comprof,:), maptype, rc=rc)
           if (ChkErr(rc,__LINE__,u_FILE_u)) return
+          !call field_getdata1d(field_dst, lfrac, rc)
+          !if (ChkErr(rc,__LINE__,u_FILE_u)) return
+          !if ( (minval(lfrac) < -eps_fraclim) .or. (maxval(lfrac) > 1._r8+eps_fraclim) )then
+          !    write(logunit,*) 'minval, maxval of lfrac = ', minval(lfrac), maxval(lfrac)
+          !    call shr_sys_abort( "lfrac on the ROF grid is out of bounds" )
+          !end if
        endif
     endif
 
