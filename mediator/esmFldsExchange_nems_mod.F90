@@ -26,7 +26,6 @@ contains
     use med_utils_mod         , only : chkerr => med_utils_chkerr
     use med_methods_mod       , only : fldchk => med_methods_FB_FldChk
     use med_internalstate_mod , only : InternalState
-    use med_internalstate_mod , only : mastertask, logunit
     use med_internalstate_mod , only : compmed, compatm, compocn, compice, complnd, compwav, ncomps
     use med_internalstate_mod , only : mapbilnr, mapconsf, mapconsd, mappatch
     use med_internalstate_mod , only : mapfcopy, mapnstod, mapnstod_consd, mapnstod_consf
@@ -39,8 +38,6 @@ contains
     use esmFlds               , only : addmap_from => med_fldList_addmap_from
     use esmFlds               , only : addfld_aoflux => med_fldList_addfld_aoflux
     use esmFlds               , only : addmap_aoflux => med_fldList_addmap_aoflux
-    
-    use med_internalstate_mod , only : InternalState, mastertask, logunit
 
     ! input/output parameters:
     type(ESMF_GridComp)              :: gcomp
@@ -49,7 +46,7 @@ contains
 
     ! local variables:
     type(InternalState) :: is_local
-    integer             :: i, n, maptype
+    integer             :: n, maptype
     character(len=CX)   :: msgString
     character(len=CL)   :: cvalue
     character(len=CS)   :: fldname
@@ -563,9 +560,8 @@ contains
     deallocate(flds)
 
     ! to ocn: partitioned stokes drift from wav
-    allocate(flds(6))
-    flds = (/'Sw_ustokes1', 'Sw_ustokes2', 'Sw_ustokes3', &
-             'Sw_vstokes1', 'Sw_vstokes2', 'Sw_vstokes3'/)
+    allocate(flds(2))
+    flds = (/'Sw_pstokes_x', 'Sw_pstokes_y'/)
     do n = 1,size(flds)
        fldname = trim(flds(n))
        if (phase == 'advertise') then
@@ -576,7 +572,7 @@ contains
        else
           if ( fldchk(is_local%wrap%FBexp(compocn)        , trim(fldname), rc=rc) .and. &
                fldchk(is_local%wrap%FBImp(compwav,compwav), trim(fldname), rc=rc)) then
-             call addmap_from(compwav, trim(fldname), compocn, mapfcopy, 'unset', 'unset')
+             call addmap_from(compwav, trim(fldname), compocn, mapbilnr_nstod, 'one', 'unset')
              call addmrg_to(compocn, trim(fldname), mrg_from=compwav, mrg_fld=trim(fldname), mrg_type='copy')
           end if
        end if
@@ -671,6 +667,20 @@ contains
     end do
     deallocate(flds)
 
+    if (phase == 'advertise') then
+       if (is_local%wrap%comp_present(compice) .and. is_local%wrap%comp_present(compwav)) then
+          call addfld_from(compwav, 'Sw_elevation_spectrum')
+          call addfld_to(compice, 'Sw_elevation_spectrum')
+       end if
+    else
+       if ( fldchk(is_local%wrap%FBExp(compice)        , 'Sw_elevation_spectrum', rc=rc) .and. &
+            fldchk(is_local%wrap%FBImp(compwav,compwav), 'Sw_elevation_spectrum', rc=rc)) then
+          call addmap_from(compwav, 'Sw_elevation_spectrum', compice, mapbilnr_nstod, 'one', 'unset')
+          call addmrg_to(compice, 'Sw_elevation_spectrum', mrg_from=compwav, &
+               mrg_fld='Sw_elevation_spectrum', mrg_type='copy')
+       end if
+    end if
+
     !=====================================================================
     ! FIELDS TO WAV (compwav)
     !=====================================================================
@@ -695,19 +705,25 @@ contains
      end do
      deallocate(flds)
 
-     ! to wav: sea ice fraction
-     if (phase == 'advertise') then
-        if (is_local%wrap%comp_present(compice) .and. is_local%wrap%comp_present(compwav)) then
-           call addfld_from(compice, 'Si_ifrac')
-           call addfld_to(compwav, 'Si_ifrac')
+     ! to wav: sea ice fraction, thickness and floe diameter
+     allocate(flds(3))
+     flds = (/'Si_ifrac   ', 'Si_floediam', 'Si_thick   '/)
+     do n = 1,size(flds)
+        fldname = trim(flds(n))
+        if (phase == 'advertise') then
+           if (is_local%wrap%comp_present(compice) .and. is_local%wrap%comp_present(compwav)) then
+              call addfld_from(compice, trim(fldname))
+              call addfld_to(compwav, trim(fldname))
         end if
-     else
-        if ( fldchk(is_local%wrap%FBexp(compwav)        , 'Si_ifrac', rc=rc) .and. &
-             fldchk(is_local%wrap%FBImp(compice,compice), 'Si_ifrac', rc=rc)) then
-            call addmap_from(compice, 'Si_ifrac', compwav, mapfcopy , 'unset', 'unset')
-            call addmrg_to(compwav, 'Si_ifrac', mrg_from=compice, mrg_fld='Si_ifrac', mrg_type='copy')
+        else
+           if ( fldchk(is_local%wrap%FBexp(compwav)        , trim(fldname), rc=rc) .and. &
+                fldchk(is_local%wrap%FBImp(compice,compice), trim(fldname), rc=rc)) then
+              call addmap_from(compice, trim(fldname), compwav, mapbilnr_nstod , 'one', 'unset')
+              call addmrg_to(compwav, trim(fldname), mrg_from=compice, mrg_fld=trim(fldname), mrg_type='copy')
+           end if
         end if
-     end if
+      end do
+      deallocate(flds)
 
      ! to wav: zonal sea water velocity from ocn
      ! to wav: meridional sea water velocity from ocn
@@ -724,7 +740,7 @@ contains
         else
            if ( fldchk(is_local%wrap%FBexp(compwav)        , trim(fldname), rc=rc) .and. &
                 fldchk(is_local%wrap%FBImp(compocn,compocn), trim(fldname), rc=rc)) then
-              call addmap_from(compocn, trim(fldname), compwav, mapfcopy , 'unset', 'unset')
+              call addmap_from(compocn, trim(fldname), compwav, mapbilnr_nstod , 'one', 'unset')
               call addmrg_to(compwav, trim(fldname), mrg_from=compocn, mrg_fld=trim(fldname), mrg_type='copy')
            end if
         end if
@@ -741,7 +757,7 @@ contains
        flds = (/'Sa_z      ', 'Sa_topo   ', 'Sa_tbot   ', 'Sa_pbot   ', &
                 'Sa_shum   ', 'Sa_u      ', 'Sa_v      ', 'Faxa_lwdn ', &
                 'Sa_ptem   ', 'Sa_dens   ', 'Faxa_swdn ', 'Sa_pslv   ', &
-                'Faxa_snowc', 'Faxa_snowl', 'Faxa_rainc', 'Faxa_rainl', & 
+                'Faxa_snowc', 'Faxa_snowl', 'Faxa_rainc', 'Faxa_rainl', &
                 'Faxa_swndr', 'Faxa_swndf', 'Faxa_swvdr', 'Faxa_swvdf', &
                 'Faxa_swnet'/)
     else
