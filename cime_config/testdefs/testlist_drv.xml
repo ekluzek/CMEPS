@@ -42,7 +42,7 @@
     </options>
   </test>
 
-  <test compset="1850_DATM%CRUJRA2024b_SLND_SICE_SOCN_SROF_SGLC_SWAV_SESP" grid="f10_f10_mt232" name="SMS_D_Ld5" testmods="drv/cplhist_create">
+  <test compset="1850_DATM%CRUJRA2024b_SLND_SICE_SOCN_SROF_SGLC_SWAV_SESP" grid="f10_f10_mt233" name="SMS_D_Ld5" testmods="drv/cplhist_create">
     <machines>
       <machine name="derecho" compiler="intel" category="aux_cmeps"/>
     </machines>
@@ -52,7 +52,7 @@
     </options>
   </test>
 
-  <test compset="1850_DATM%CRUJRA2024b_SLND_SICE_SOCN_SROF_SGLC_SWAV_SESP" grid="f10_f10_mt232" name="ERS_Ld5" testmods="drv/cplhist_create">
+  <test compset="1850_DATM%CRUJRA2024b_SLND_SICE_SOCN_SROF_SGLC_SWAV_SESP" grid="f10_f10_mt233" name="ERS_Ld5" testmods="drv/cplhist_create">
     <machines>
       <machine name="derecho" compiler="intel" category="aux_cmeps"/>
     </machines>
@@ -62,7 +62,7 @@
     </options>
   </test>
 
-  <test compset="2000_DATM%CRUJRA2024b_DLND%SCPL_DICE%SSMI_DOCN%DOM_DROF%NYF_DGLC%NOEVOLVE_DWAV%CLIMO_SESP" grid="f10_f10_mt232" name="SMS_D_Ld5" testmods="drv/cplhist_create">
+  <test compset="2000_DATM%CRUJRA2024b_DLND%SCPL_DICE%SSMI_DOCN%DOM_DROF%NYF_DGLC%NOEVOLVE_DWAV%CLIMO_SESP" grid="f10_f10_mt233" name="SMS_D_Ld5" testmods="drv/cplhist_create">
     <machines>
       <machine name="derecho" compiler="intel" category="aux_cmeps"/>
     </machines>
